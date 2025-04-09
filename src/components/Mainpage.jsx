@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from "react";
 import backImage from "../assets/bg.png";
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Popup, useMap, Marker } from "react-leaflet";
+import L from "leaflet";
+
+// Fix for default marker icon issue in Vite production build
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
 
 const RecenterMap = ({ lat, lng }) => {
   const map = useMap();
@@ -62,20 +75,20 @@ const Mainpage = () => {
   useEffect(() => {
     fetchIPData();
   }, []);
+
   const handleNewIpSearch = () => {
     if (addIp.trim() !== "") {
       fetchIPData(addIp.trim());
     }
   };
+
   const metadata = [
     { Name: "IP ADDRESS", content: ipData.add || "Loading..." },
-    {
-      Name: "LOCATION",
-      content: ipData.city + " , " + ipData.country,
-    },
+    { Name: "LOCATION", content: `${ipData.city}, ${ipData.country}` },
     { Name: "TIME ZONE", content: ipData.timezone || "Loading..." },
     { Name: "ISP", content: ipData.isp || "Loading..." },
   ];
+
   return (
     <div className="text-white flex flex-col items-center">
       <div
